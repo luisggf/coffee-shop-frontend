@@ -5,7 +5,7 @@ export default function Header() {
         <nav className="space-x-4">
           <a
             href="#"
-            className="text-grey-700 hover:text-gray-400 transition duration-300"
+            className="text-grey-700 drop-shadow-md hover:text-gray-400 transition duration-300"
           >
             Home
           </a>

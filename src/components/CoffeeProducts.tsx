@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import Header from "./MainCoffeeHeader";
@@ -6,41 +6,48 @@ import Header from "./MainCoffeeHeader";
 interface Product {
   id: number;
   name: string;
-  image: string;
-  priceRange: string;
+  description: string;
+  price: string;
+  image?: string;
 }
 
-const products: Product[] = [
-  {
-    id: 1,
-    name: "Colombia Dark Roast",
-    image: "./public/coffee-breed-1.jpg",
-    priceRange: "$19.00 – $27.00",
-  },
-  {
-    id: 2,
-    name: "Swiss Water Decaf",
-    image: "./public/coffee-breed-2.jpg",
-    priceRange: "$19.00 – $27.00",
-  },
-  {
-    id: 3,
-    name: "French Roast",
-    image: "./public/coffee-breed-3.jpg",
-    priceRange: "$19.00 – $27.00",
-  },
-  {
-    id: 4,
-    name: "Breakfast Blend",
-    image: "./public/coffee-breed-4.jpg",
-    priceRange: "$19.00 – $27.00",
-  },
-];
-
 const CoffeeProducts: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const images = [
+    "./public/coffee-breed-1.jpg",
+    "./public/coffee-breed-2.jpg",
+    "./public/coffee-breed-3.jpg",
+    "./public/coffee-breed-4.jpg",
+  ];
+
+  const getRandomImage = () => {
+    return images[Math.floor(Math.random() * images.length)];
+  };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("http://localhost:3333/coffees");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        const productsWithImages = data.map((product: Product) => ({
+          ...product,
+          image: getRandomImage(),
+        }));
+        setProducts(productsWithImages);
+      } catch (error) {
+        console.error("Failed to fetch coffee products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
     <div className="container mx-auto px-4">
-      <Header></Header>
+      <Header />
 
       <header className="flex justify-between items-center py-4">
         <nav className="flex space-x-4">
@@ -90,7 +97,8 @@ const CoffeeProducts: React.FC = () => {
             />
             <div className="p-4">
               <h2 className="text-lg font-semibold">{product.name}</h2>
-              <p className="mt-2 text-gray-600">{product.priceRange}</p>
+              <p className="mt-2 text-gray-600">${product.price}</p>
+              <p className="mt-2 text-gray-600">{product.description}</p>
             </div>
           </div>
         ))}
