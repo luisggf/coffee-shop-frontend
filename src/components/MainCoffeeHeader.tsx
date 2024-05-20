@@ -1,47 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import ShoppingCart from "./ShoppingCart";
-import { useState } from "react";
+import ShoppingCartContainer from "./ShoppingCartParent";
 
 export default function Header() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      name: "Latte Coffee",
-      price: 2.99,
-      quantity: 2,
-      image: "./public/coffee-breed-1.jpg",
-    },
-    {
-      id: 2,
-      name: "Mocha Coffee",
-      price: 3.19,
-      quantity: 1,
-      image: "./public/coffee-breed-2.jpg",
-    },
-  ]);
-
-  const handleRemoveItem = (id: number) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-  };
-
-  const handleIncrementItem = (id: number) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  };
-
-  const handleDecrementItem = (id: number) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
-  };
-
   return (
     <Dialog.Root>
       <header
@@ -91,12 +51,7 @@ export default function Header() {
                 <Dialog.Portal>
                   <Dialog.Overlay className="fixed inset-0 bg-black/50" />
                   <Dialog.Content className="absolute right-5 top-20 bg-white p-5 w-[400px] h-[600px] rounded-md shadow-lg">
-                    <ShoppingCart
-                      items={cartItems}
-                      onRemoveItem={handleRemoveItem}
-                      onIncrementItem={handleIncrementItem}
-                      onDecrementItem={handleDecrementItem}
-                    />
+                    <ShoppingCartContainer />
                   </Dialog.Content>
                 </Dialog.Portal>
               </Dialog.Root>

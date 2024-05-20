@@ -44,7 +44,7 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
               />
               <div className="flex flex-col ml-4">
                 <span className="font-medium">{item.name}</span>
-                <span className="text-gray-500">{item.price.toFixed(2)}</span>
+                <span className="text-gray-500">${item.price.toFixed(2)}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <button
