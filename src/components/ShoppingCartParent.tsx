@@ -7,6 +7,7 @@ type CartItem = {
   price: number;
   quantity: number;
   image: string;
+  cartId: string;
 };
 
 const ShoppingCartContainer: React.FC = () => {
@@ -31,6 +32,7 @@ const ShoppingCartContainer: React.FC = () => {
           desc: item.coffee_desc,
           quantity: item.quantity,
           image: item.img_url, // Update based on your actual data structure
+          cartId: item.cartId,
         }));
 
         setCartItems(formattedCartItems);

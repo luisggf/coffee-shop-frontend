@@ -5,10 +5,12 @@ import Header from "./MainCoffeeHeader";
 import { toast } from "sonner";
 
 interface Product {
+  cartId: string;
   img_url: string | undefined;
   id: string;
   name: string;
   description: string;
+  quantity: number;
   price: number;
   image?: string;
 }
@@ -16,9 +18,8 @@ interface Product {
 const CoffeeProducts: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [quantity, setQuantity] = useState<number>(1);
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(
-    null
-  );
+  const [product_id, setSelectedProductId] = useState<string | null>(null);
+  const [sortCriteria, setSortCriteria] = useState<string>("default");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -40,12 +41,16 @@ const CoffeeProducts: React.FC = () => {
     fetchProducts();
   }, []);
 
-  const handleAddToCart = async () => {
-    if (!selectedProductId) {
-      toast.error("Failed to get Product ID");
+  const handleAddToCart = async (product: Product | null) => {
+    if (!product) {
+      toast.error("Failed to get Product");
       console.log("Failed connection");
       return;
     }
+    console.log(product);
+    console.log(quantity);
+    product.quantity = quantity;
+    product.cartId = "clwefox9m0001hi49wpwz03mo";
 
     try {
       const response = await fetch("http://localhost:3333/add-to-cart", {
@@ -54,12 +59,13 @@ const CoffeeProducts: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          cartId: "clwe8rfnt0000g49z9diwufce",
-          coffeeId: selectedProductId,
-          quantity,
-          coffee_price: products.find(
-            (product) => product.id === selectedProductId
-          )?.price,
+          cartId: product.cartId,
+          coffee_name: product.name,
+          coffee_desc: product.description,
+          coffeeId: product.id,
+          quantity: product.quantity,
+          coffee_price: product.price,
+          img_url: product.img_url,
         }),
       });
 
@@ -69,10 +75,29 @@ const CoffeeProducts: React.FC = () => {
 
       const data = await response.json();
       console.log("Item added to cart", data);
+      toast.success("Item added to cart");
     } catch (error) {
       console.error("Error adding item to cart:", error);
+      toast.error("Error adding item to cart");
     }
   };
+
+  const handleSortByName = () => {
+    setSortCriteria("name");
+  };
+
+  const handleSortByPrice = () => {
+    setSortCriteria("price");
+  };
+
+  const sortedProducts = [...products].sort((a, b) => {
+    if (sortCriteria === "name") {
+      return a.name.localeCompare(b.name);
+    } else if (sortCriteria === "price") {
+      return a.price - b.price;
+    }
+    return 0;
+  });
 
   return (
     <div className="mx-auto">
@@ -104,17 +129,23 @@ const CoffeeProducts: React.FC = () => {
               </button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content className="z-50 min-w-[150px] bg-white border border-gray-200 rounded-md shadow-md">
-              <DropdownMenu.Item className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+              <DropdownMenu.Item
+                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                onClick={handleSortByName}
+              >
                 Sort by Name
               </DropdownMenu.Item>
-              <DropdownMenu.Item className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+              <DropdownMenu.Item
+                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                onClick={handleSortByPrice}
+              >
                 Sort by Price
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu.Root>
         </header>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
+          {sortedProducts.map((product) => (
             <div
               key={product.id}
               className="bg-white rounded-lg shadow-md overflow-hidden relative"
@@ -135,7 +166,7 @@ const CoffeeProducts: React.FC = () => {
                 <DropdownMenu.Trigger asChild>
                   <button
                     className="absolute bottom-0 w-full bg-gray-100 flex justify-center items-end hover:bg-green-500 hover:text-white"
-                    onClick={() => setSelectedProductId(product.id)}
+                    onClick={() => setSelectedProductId(product_id)}
                   >
                     <div className="relative py-2">
                       <svg
@@ -168,7 +199,7 @@ const CoffeeProducts: React.FC = () => {
                       />
                     </label>
                     <button
-                      onClick={handleAddToCart}
+                      onClick={() => handleAddToCart(product)}
                       className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
                     >
                       Add to Cart
@@ -180,17 +211,17 @@ const CoffeeProducts: React.FC = () => {
           ))}
         </div>
         <style>{`
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #cbd5e0; /* Tailwind's gray-300 */
-    border-radius: 4px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background-color: #f7fafc; /* Tailwind's gray-100 */
-  }
-`}</style>
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e0; /* Tailwind's gray-300 */
+            border-radius: 4px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background-color: #f7fafc; /* Tailwind's gray-100 */
+          }
+        `}</style>
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
+// maincoffeeheader.tsx
 import * as Dialog from "@radix-ui/react-dialog";
 import ShoppingCartContainer from "./ShoppingCartParent";
+import { Link } from "react-router-dom";
 
 export default function Header() {
   return (
@@ -10,30 +12,24 @@ export default function Header() {
       >
         <div className="w-full flex items-center justify-between px-4">
           <nav className="space-x-4">
-            <a
-              href="#"
+            <Link
+              to="/add-coffee"
               className="text-gray-100 drop-shadow-md hover:text-gray-400 transition duration-300 ml-10"
             >
-              Home
-            </a>
-            <a
-              href="#"
-              className="text-gray-100 hover:text-gray-400 transition duration-300"
-            >
-              Menu
-            </a>
-            <a
-              href="#"
+              Add Coffee
+            </Link>
+            <Link
+              to="/about"
               className="text-gray-100 hover:text-gray-400 transition duration-300"
             >
               About
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to="/contact"
               className="text-gray-100 hover:text-gray-400 transition duration-300"
             >
               Contact
-            </a>
+            </Link>
           </nav>
           <div className="flex items-center">
             <img
@@ -55,12 +51,12 @@ export default function Header() {
                   </Dialog.Content>
                 </Dialog.Portal>
               </Dialog.Root>
-              <a
-                href="#"
+              <Link
+                to="/shop"
                 className="text-gray-100 hover:text-gray-400 transition duration-300 mr-10"
               >
                 Shop
-              </a>
+              </Link>
             </nav>
           </div>
         </div>
