@@ -50,7 +50,7 @@ const CoffeeProducts: React.FC = () => {
     console.log(product);
     console.log(quantity);
     product.quantity = quantity;
-    product.cartId = "clwefox9m0001hi49wpwz03mo";
+    product.cartId = "clwji4xp700013zf4ndyzx6n8";
 
     try {
       const response = await fetch("http://localhost:3333/add-to-cart", {
