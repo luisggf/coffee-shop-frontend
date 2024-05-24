@@ -3,6 +3,7 @@ import ShoppingCartContainer from "./ShoppingCartParent";
 import { Link } from "react-router-dom";
 import { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
+import { toast } from "sonner";
 
 interface CoffeeData {
   name: string;
@@ -62,10 +63,10 @@ export default function Header() {
         price: 0,
         imgFile: null,
       });
-      alert("Coffee added successfully!");
+      toast.success("Coffee was added sucessfully!");
     } catch (error) {
       console.error("Error adding coffee:", error);
-      alert("Failed to add coffee. Please try again.");
+      toast.error("Failed to add coffee. Please try again.");
     }
   };
 

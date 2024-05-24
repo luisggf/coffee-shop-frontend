@@ -3,8 +3,9 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import Header from "./MainCoffeeHeader";
 import { toast } from "sonner";
+import CoffeePopup from "./CoffeePopUp";
 
-interface Product {
+export interface Product {
   cartId: string;
   img_url: string | undefined;
   id: string;
@@ -18,7 +19,9 @@ interface Product {
 const CoffeeProducts: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [quantity, setQuantity] = useState<number>(1);
-  const [product_id, setSelectedProductId] = useState<string | null>(null);
+  const [cartId, setCartId] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
   const [sortCriteria, setSortCriteria] = useState<string>("default");
 
   useEffect(() => {
@@ -39,18 +42,36 @@ const CoffeeProducts: React.FC = () => {
     };
 
     fetchProducts();
+
+    const fetchCartId = async () => {
+      try {
+        const response = await fetch("http://localhost:3333/get-cartID");
+        if (!response.ok) {
+          throw new Error("Failed to fetch cart ID");
+        }
+        const data = await response.json();
+        setCartId(data.cartId);
+      } catch (error) {
+        console.error("Failed to fetch cart ID:", error);
+      }
+    };
+
+    fetchCartId();
   }, []);
 
-  const handleAddToCart = async (product: Product | null) => {
+  const handleAddToCart = async (
+    product: Product | null,
+    e: React.MouseEvent
+  ) => {
+    e.stopPropagation(); // Stop event propagation to prevent the card click handler
+
     if (!product) {
       toast.error("Failed to get Product");
       console.log("Failed connection");
       return;
     }
-    console.log(product);
-    console.log(quantity);
+
     product.quantity = quantity;
-    product.cartId = "clwji4xp700013zf4ndyzx6n8";
 
     try {
       const response = await fetch("http://localhost:3333/add-to-cart", {
@@ -59,7 +80,7 @@ const CoffeeProducts: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          cartId: product.cartId,
+          cartId: cartId,
           coffee_name: product.name,
           coffee_desc: product.description,
           coffeeId: product.id,
@@ -79,6 +100,33 @@ const CoffeeProducts: React.FC = () => {
     } catch (error) {
       console.error("Error adding item to cart:", error);
       toast.error("Error adding item to cart");
+    }
+  };
+
+  const handleRemoveProduct = async (productId: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3333/remove-coffee/${productId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to remove product");
+      }
+
+      const data = await response.json();
+      console.log("Product removed", data);
+      toast.success("Product removed");
+
+      // Update the state to remove the product from the list
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => product.id !== productId)
+      );
+    } catch (error) {
+      console.error("Error removing product:", error);
+      toast.error("Error removing product");
     }
   };
 
@@ -104,26 +152,9 @@ const CoffeeProducts: React.FC = () => {
       <Header />
       <div className="container mx-auto px-4 mt-15">
         <header className="flex justify-between items-center py-4">
-          <nav className="flex space-x-4">
-            <a href="#" className="hover:underline">
-              Shop All
-            </a>
-            <a href="#" className="hover:underline">
-              Coffee
-            </a>
-            <a href="#" className="hover:underline">
-              Cold Brew
-            </a>
-            <a href="#" className="hover:underline">
-              Decaf
-            </a>
-            <a href="#" className="hover:underline">
-              Merchandise
-            </a>
-          </nav>
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
-              <button className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+              <button className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 mb-4">
                 Default sorting
                 <ChevronDownIcon className="ml-2 h-5 w-5" />
               </button>
@@ -148,7 +179,11 @@ const CoffeeProducts: React.FC = () => {
           {sortedProducts.map((product) => (
             <div
               key={product.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden relative"
+              className="bg-white rounded-lg shadow-md overflow-hidden relative cursor-pointer"
+              onClick={() => {
+                setSelectedProduct(product);
+                setIsPopupOpen(true);
+              }}
             >
               <img
                 src={product.img_url}
@@ -166,7 +201,7 @@ const CoffeeProducts: React.FC = () => {
                 <DropdownMenu.Trigger asChild>
                   <button
                     className="absolute bottom-0 w-full bg-gray-100 flex justify-center items-end hover:bg-green-500 hover:text-white"
-                    onClick={() => setSelectedProductId(product_id)}
+                    onClick={(e) => handleAddToCart(product, e)}
                   >
                     <div className="relative py-2">
                       <svg
@@ -199,7 +234,7 @@ const CoffeeProducts: React.FC = () => {
                       />
                     </label>
                     <button
-                      onClick={() => handleAddToCart(product)}
+                      onClick={(e) => handleAddToCart(product, e)}
                       className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
                     >
                       Add to Cart
@@ -210,7 +245,21 @@ const CoffeeProducts: React.FC = () => {
             </div>
           ))}
         </div>
-        <style>{`
+        {selectedProduct && (
+          <CoffeePopup
+            product={selectedProduct}
+            isOpen={isPopupOpen}
+            onClose={() => setIsPopupOpen(false)}
+            onRemove={handleRemoveProduct}
+          />
+        )}
+      </div>
+      <style>
+        {`
+          .cart-container {
+            max-height: 300px; /* Adjust as needed */
+            overflow-y: auto;
+          }
           .custom-scrollbar::-webkit-scrollbar {
             width: 8px;
           }
@@ -221,8 +270,8 @@ const CoffeeProducts: React.FC = () => {
           .custom-scrollbar::-webkit-scrollbar-track {
             background-color: #f7fafc; /* Tailwind's gray-100 */
           }
-        `}</style>
-      </div>
+        `}
+      </style>
     </div>
   );
 };
