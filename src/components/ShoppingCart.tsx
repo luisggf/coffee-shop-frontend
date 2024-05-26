@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
+import QRCODE from "../../public/qr/qr-code.png";
 
 type CartItem = {
   id: number;
@@ -17,6 +18,7 @@ type ShoppingCartProps = {
   onRemoveItem: (id: number) => void;
   onIncrementItem: (id: number) => void;
   onDecrementItem: (id: number) => void;
+  onClearCart: () => void; // Add this to the prop types
 };
 
 const ShoppingCart: React.FC<ShoppingCartProps> = ({
@@ -24,6 +26,7 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
   onRemoveItem,
   onIncrementItem,
   onDecrementItem,
+  onClearCart,
 }) => {
   const [sortCriteria, setSortCriteria] = useState<string | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
@@ -126,8 +129,32 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
     }
   };
 
+  const handlePayNow = async () => {
+    try {
+      const response = await fetch("http://localhost:3333/clear-cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to process payment");
+      }
+
+      const result = await response.json();
+      console.log("Payment processed", result);
+      toast.success("Payment successful");
+
+      onClearCart(); // Clear the cart in the UI
+    } catch (error) {
+      console.error("Error processing payment:", error);
+      toast.error("Failed to process payment");
+    }
+  };
+
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md">
+    <div className="p-4 bg-white rounded-lg shadow-md w-full">
       <h2 className="text-lg font-semibold mb-4">Shopping Cart</h2>
       {items.length === 0 ? (
         <p>Your cart is empty.</p>
@@ -155,7 +182,7 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu.Root>
-          <div className="cart-container custom-scrollbar">
+          <div className="container py-4 custom-scrollbar">
             {sortedItems.map((item) => (
               <div
                 key={item.id}
@@ -191,7 +218,7 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
                 </div>
                 <button
                   onClick={() => handleRemoveItem(item)}
-                  className="text-red-500 size-3 ml-3"
+                  className="text-red-500 size-3 ml-3 mr-3"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                     <path
@@ -211,9 +238,9 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
       )}
       <div className="mt-6">
         <h2 className="text-lg font-semibold mb-4">Payment</h2>
-        <div className="flex mb-4">
+        <div className="flex flex-col space-y-2 mb-4 sm:flex-row sm:space-y-0 sm:space-x-2">
           <button
-            className={`mr-2 px-3 py-2 border rounded-md shadow-sm text-sm font-medium ${
+            className={`px-3 py-2 flex-1 border rounded-md shadow-sm text-sm font-medium ${
               selectedPaymentMethod === "Credit Card"
                 ? "bg-blue-500 text-white"
                 : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
@@ -223,7 +250,7 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
             Credit Card
           </button>
           <button
-            className={`px-3 py-2 border rounded-md shadow-sm text-sm font-medium ${
+            className={`px-3 py-2 flex-1 border rounded-md shadow-sm text-sm font-medium ${
               selectedPaymentMethod === "PIX"
                 ? "bg-blue-500 text-white"
                 : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
@@ -233,71 +260,91 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
             PIX
           </button>
         </div>
-        {selectedPaymentMethod === "Credit Card" && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Card Number
-              </label>
-              <input
-                type="text"
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="4114 5784 2105 2145"
-              />
-            </div>
-            <div className="flex space-x-4">
+        <div className="payment-content">
+          {selectedPaymentMethod === "Credit Card" && (
+            <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Expiry
+                  Card Number
                 </label>
                 <input
                   type="text"
                   className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  placeholder="02/30"
+                  placeholder="4114 5784 2105 2145"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  CVC
-                </label>
-                <input
-                  type="text"
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  placeholder="885"
-                />
+              <div className="flex space-x-4">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Expiry
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    placeholder="02/30"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700">
+                    CVC
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    placeholder="885"
+                  />
+                </div>
               </div>
+              <button
+                className="mt-4 w-full bg-blue-500 text-white py-2 rounded"
+                onClick={handlePayNow}
+              >
+                Pay Now ${subtotal}
+              </button>
             </div>
-            <button className="mt-4 w-full bg-blue-500 text-white py-2 rounded">
-              Pay Now ${subtotal}
-            </button>
-          </div>
-        )}
-        {selectedPaymentMethod === "PIX" && (
-          <div className="space-y-4">
-            <p className="text-sm text-gray-700">PIX payment instructions...</p>
-            <button className="mt-4 w-full bg-blue-500 text-white py-2 rounded">
-              Pay Now ${subtotal}
-            </button>
-          </div>
-        )}
+          )}
+          {selectedPaymentMethod === "PIX" && (
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-700">
+                  PIX payment instructions...
+                </p>
+                <img
+                  src={QRCODE}
+                  alt="QR Code for PIX payment"
+                  className="w-32 m-auto"
+                />
+              </div>
+              <button
+                className="mt-4 w-full bg-blue-500 text-white py-2 rounded"
+                onClick={handlePayNow}
+              >
+                Pay Now ${subtotal}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       <style>
         {`
-              .cart-container {
-                max-height: 300px; /* Adjust as needed */
-                overflow-y: auto;
-              }
-              .custom-scrollbar::-webkit-scrollbar {
-                width: 8px;
-              }
-              .custom-scrollbar::-webkit-scrollbar-thumb {
-                background-color: #cbd5e0; /* Tailwind's gray-300 */
-                border-radius: 4px;
-              }
-              .custom-scrollbar::-webkit-scrollbar-track {
-                background-color: #f7fafc; /* Tailwind's gray-100 */
-              }
-              `}
+          .cart-container {
+            max-height: 300px; /* Adjust as needed */
+            overflow-y: auto;
+          }
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e0; /* Tailwind's gray-300 */
+            border-radius: 4px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background-color: #f7fafc; /* Tailwind's gray-100 */
+          }
+          .payment-content {
+            width: 100%;
+          }
+        `}
       </style>
     </div>
   );

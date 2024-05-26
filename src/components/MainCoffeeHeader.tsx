@@ -36,7 +36,7 @@ export default function Header() {
     } else {
       setCoffeeData((prevData) => ({
         ...prevData,
-        imgFile: e.target.files[0],
+        imgFile: e.target.files![0],
       }));
     }
   };
@@ -84,6 +84,12 @@ export default function Header() {
               </button>
             </Dialog.Trigger>
             <Link
+              to="/"
+              className="text-gray-100 hover:text-gray-400 transition duration-300"
+            >
+              Home
+            </Link>
+            <Link
               to="/about"
               className="text-gray-100 hover:text-gray-400 transition duration-300"
             >
@@ -111,17 +117,11 @@ export default function Header() {
                 </Dialog.Trigger>
                 <Dialog.Portal>
                   <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-                  <Dialog.Content className="absolute right-5 top-20 bg-white p-5 w-[400px] h-[600px] rounded-md shadow-lg">
+                  <Dialog.Content className="absolute overflow-auto right-5 top-20 bg-white p-5 rounded-md shadow-lg">
                     <ShoppingCartContainer />
                   </Dialog.Content>
                 </Dialog.Portal>
               </Dialog.Root>
-              <Link
-                to="/shop"
-                className="text-gray-100 hover:text-gray-400 transition duration-300 mr-10"
-              >
-                Shop
-              </Link>
             </nav>
           </div>
         </div>

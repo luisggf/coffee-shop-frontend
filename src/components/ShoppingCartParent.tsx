@@ -13,6 +13,9 @@ type CartItem = {
 const ShoppingCartContainer: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
+  const onClearCart = () => {
+    setCartItems([]);
+  };
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
@@ -72,6 +75,7 @@ const ShoppingCartContainer: React.FC = () => {
       onRemoveItem={handleRemoveItem}
       onIncrementItem={handleIncrementItem}
       onDecrementItem={handleDecrementItem}
+      onClearCart={onClearCart}
     />
   );
 };

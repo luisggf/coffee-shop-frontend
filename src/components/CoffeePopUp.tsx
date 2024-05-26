@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Product } from "./CoffeeProducts"; // Correctly importing the Product type
 import axios from "axios";
 import { toast } from "sonner";
@@ -19,6 +19,32 @@ const CoffeePopup: React.FC<CoffeePopupProps> = ({
   const [description, setDescription] = useState(product.description);
   const [price, setPrice] = useState(product.price);
   const [image, setImage] = useState<File | null>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
 
   const handleUpdate = async () => {
     const formData = new FormData();
@@ -69,7 +95,27 @@ const CoffeePopup: React.FC<CoffeePopupProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 custom-scrollbar">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-1/4">
+      <div
+        ref={popupRef}
+        className="bg-white rounded-lg shadow-lg p-6 w-1/4 relative"
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              fillRule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
         <div className="flex items-center mb-4">
           <img
             src={product.img_url}
@@ -150,12 +196,6 @@ const CoffeePopup: React.FC<CoffeePopupProps> = ({
             className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
           >
             Remove
-          </button>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-          >
-            Cancel
           </button>
           <button
             onClick={handleUpdate}
