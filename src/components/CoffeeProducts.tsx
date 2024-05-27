@@ -147,6 +147,15 @@ const CoffeeProducts: React.FC = () => {
     return 0;
   });
 
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    if (value >= 1) {
+      setQuantity(value);
+    } else {
+      setQuantity(1);
+    }
+  };
+
   return (
     <div className="mx-auto">
       <Header />
@@ -182,7 +191,7 @@ const CoffeeProducts: React.FC = () => {
               className="bg-white rounded-lg shadow-md overflow-hidden relative cursor-pointer mt-5 group "
             >
               <svg
-                className="absolute top-2 right-2 w-6 h-6 fill-white shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                className="absolute top-2 right-2 w-6 h-6 fill-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-md shadow-md"
                 onClick={() => {
                   setIsPopupOpen(true);
                   setSelectedProduct(product);
@@ -193,6 +202,7 @@ const CoffeeProducts: React.FC = () => {
                 width="800px"
                 height="800px"
                 viewBox="0 0 494.936 494.936"
+                fill="#ffffff"
               >
                 <g>
                   <g>
@@ -258,7 +268,8 @@ const CoffeeProducts: React.FC = () => {
                         type="number"
                         className="w-16 border border-gray-300 rounded-md shadow-sm text-sm p-1"
                         value={quantity}
-                        onChange={(e) => setQuantity(Number(e.target.value))}
+                        onChange={handleQuantityChange}
+                        min="1"
                       />
                     </label>
                     <button

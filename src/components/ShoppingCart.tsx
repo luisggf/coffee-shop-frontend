@@ -18,7 +18,7 @@ type ShoppingCartProps = {
   onRemoveItem: (id: number) => void;
   onIncrementItem: (id: number) => void;
   onDecrementItem: (id: number) => void;
-  onClearCart: () => void; // Add this to the prop types
+  onClearCart: () => void;
 };
 
 const ShoppingCart: React.FC<ShoppingCartProps> = ({
@@ -132,7 +132,7 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
   const handlePayNow = async () => {
     try {
       const response = await fetch("http://localhost:3333/clear-cart", {
-        method: "POST",
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
@@ -146,7 +146,7 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
       console.log("Payment processed", result);
       toast.success("Payment successful");
 
-      onClearCart(); // Clear the cart in the UI
+      onClearCart();
     } catch (error) {
       console.error("Error processing payment:", error);
       toast.error("Failed to process payment");
@@ -154,7 +154,7 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md w-full">
+    <div className="p-4 bg-white rounded-lg shadow-md w-[350px] max-w-full mx-auto">
       <h2 className="text-lg font-semibold mb-4">Shopping Cart</h2>
       {items.length === 0 ? (
         <p>Your cart is empty.</p>
@@ -191,7 +191,7 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-12 h-12 object-cover"
+                  className="w-16 h-16 object-cover"
                 />
                 <div className="flex-1 ml-4">
                   <div className="flex flex-col">
@@ -240,20 +240,20 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
         <h2 className="text-lg font-semibold mb-4">Payment</h2>
         <div className="flex flex-col space-y-2 mb-4 sm:flex-row sm:space-y-0 sm:space-x-2">
           <button
-            className={`px-3 py-2 flex-1 border rounded-md shadow-sm text-sm font-medium ${
+            className={`px-4 py-2 border rounded-md shadow-sm text-sm font-medium ${
               selectedPaymentMethod === "Credit Card"
-                ? "bg-blue-500 text-white"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                ? "bg-blue-500 text-white border-transparent"
+                : "bg-white text-gray-700 border-gray-300"
             }`}
             onClick={() => setSelectedPaymentMethod("Credit Card")}
           >
             Credit Card
           </button>
           <button
-            className={`px-3 py-2 flex-1 border rounded-md shadow-sm text-sm font-medium ${
+            className={`px-4 py-2 border rounded-md shadow-sm text-sm font-medium ${
               selectedPaymentMethod === "PIX"
-                ? "bg-blue-500 text-white"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                ? "bg-blue-500 text-white border-transparent"
+                : "bg-white text-gray-700 border-gray-300"
             }`}
             onClick={() => setSelectedPaymentMethod("PIX")}
           >
@@ -304,48 +304,23 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
             </div>
           )}
           {selectedPaymentMethod === "PIX" && (
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-700">
-                  PIX payment instructions...
-                </p>
-                <img
-                  src={QRCODE}
-                  alt="QR Code for PIX payment"
-                  className="w-32 m-auto"
-                />
-              </div>
+            <div className="flex flex-col items-center">
+              <img
+                src={QRCODE}
+                alt="PIX QR Code"
+                className="w-48 h-48 object-cover"
+              />
               <button
-                className="mt-4 w-full bg-blue-500 text-white py-2 rounded"
+                type="button"
+                className="mt-4 w-full px-4 py-2 bg-blue-500 text-white rounded-md"
                 onClick={handlePayNow}
               >
-                Pay Now ${subtotal}
+                Confirm PIX Payment
               </button>
             </div>
           )}
         </div>
       </div>
-      <style>
-        {`
-          .cart-container {
-            max-height: 300px; /* Adjust as needed */
-            overflow-y: auto;
-          }
-          .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #cbd5e0; /* Tailwind's gray-300 */
-            border-radius: 4px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-track {
-            background-color: #f7fafc; /* Tailwind's gray-100 */
-          }
-          .payment-content {
-            width: 100%;
-          }
-        `}
-      </style>
     </div>
   );
 };
