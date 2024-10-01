@@ -1,136 +1,74 @@
-# Coffee Shop Frontend
+# Coffee Shop Front
 
-This project is the frontend for a coffee shop application, built using modern web development technologies such as Vite, TypeScript, Radix UI, Sonner, Axios, and more. This README will guide you through the setup process, explaining the dependencies and how to run the code.
+## Libraries and Commands Used in This Project
 
-## Table of Contents
+### 1. Clone the project Repository
 
-- [Technologies Used](#technologies-used)
-- [Installation](#installation)
-- [Running the Application](#running-the-application)
-- [Project Structure](#project-structure)
-- [Scripts](#scripts)
-- [Dependencies](#dependencies)
+Clone this repository to your local machine:
 
-## Technologies Used
+```bash
+git clone https://github.com/luisggf/coffee-shop-frontend
+cd <repository-directory>
+```
 
-- **Vite**: A fast build tool and development server.
-- **TypeScript**: A superset of JavaScript that adds static types.
-- **Radix UI**: A set of accessible and customizable UI components.
-  - **@radix-ui/react-dialog**
-  - **@radix-ui/react-dropdown-menu**
-  - **@radix-ui/react-icons**
-- **Sonner**: A toast notification library.
-- **Axios**: A promise-based HTTP client for making requests.
-- **React**: A JavaScript library for building user interfaces.
-- **TailwindCSS**: A utility-first CSS framework.
+### 2. Install Project Dependencies
 
-## Installation
+The `package.json` file is already configured with all the necessary dependencies. To install them, simply run:
 
-Before running the application, ensure you have Node.js and npm (or yarn) installed. Then, follow these steps:
+```bash
+npm install
+```
 
-1. Clone the repository:
+### 3. Available Scripts
 
-   ```sh
-   git clone https://github.com/your-username/coffee-shop-front.git
-   cd coffee-shop-front
-   ```
+The following scripts are available in the `package.json` file:
 
-2. Install the dependencies:
-   ```sh
-   npm install
-   # or
-   yarn install
-   ```
+- **Start the development server**:
 
-## Running the Application
+  This command will start the Vite development server, enabling hot module replacement (HMR) and fast feedback during development.
 
-You can run the application in development mode, build it for production, or preview the production build using the following commands:
+  ```bash
+  npm run dev
+  ```
 
-### Development Mode
+### 4. Key Dependencies
 
-To start the development server with hot reloading, run:
+- **React**: Core library for building user interfaces.
+- **React DOM**: The entry point for React into the DOM.
+- **React Router DOM**: For handling routing in the application.
+- **TypeScript**: For static typing in JavaScript.
+- **Vite**: For fast and optimized development and build processes.
+- **Radix UI**: For accessible and customizable UI components.
+- **Tailwind CSS**: For utility-first CSS styling.
+- **Axios**: For making HTTP requests to the backend API.
+- **Socket.io Client**: For real-time communication with the backend.
 
-```sh
+### 5. Project Structure
+
+The project is structured as follows:
+
+```
+src/
+  ├── assets/            # SVG and Images used for styling
+  ├── components/        # Reusable UI Components
+  ├── App.tsx            # Main application component
+  ├── main.tsx           # Application entry point
+  └── index.html         # Main HTML file
+  └── vite-env.d.ts
+```
+
+### 6. Styling
+
+Tailwind CSS is used for styling the application. If you need to customize the default styles, you can modify the Tailwind configuration file (`tailwind.config.js`) in the project.
+
+### 7. Running the Application
+
+To run the application in development mode:
+
+```bash
 npm run dev
-# or
-yarn dev
 ```
 
-### Production Build
+### 8. Connecting to the Backend
 
-To build the application for production, run:
-
-```sh
-npm run build
-# or
-yarn build
-```
-
-### Preview Production Build
-
-To preview the production build, run:
-
-```sh
-npm run preview
-# or
-yarn preview
-```
-
-## Project Structure
-
-The project structure is as follows:
-
-```
-coffee-shop-front/
-├── node_modules/
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── pages/
-│   ├── App.tsx
-│   ├── main.tsx
-│   └── ...
-├── .gitignore
-├── index.html
-├── package.json
-├── postcss.config.js
-├── tailwind.config.js
-├── tsconfig.json
-└── vite.config.ts
-```
-
-## Scripts
-
-- **dev**: Starts the development server.
-- **build**: Compiles TypeScript and builds the project for production.
-- **preview**: Previews the production build.
-
-## Dependencies
-
-### Runtime Dependencies
-
-- **@fastify/multipart**: Handling file uploads.
-- **@radix-ui/react-dialog**: Accessible dialog component.
-- **@radix-ui/react-dropdown-menu**: Accessible dropdown menu component.
-- **@radix-ui/react-icons**: Icon set for Radix UI.
-- **axios**: HTTP client for making API requests.
-- **react**: Library for building user interfaces.
-- **react-dom**: Entry point for DOM rendering in React.
-- **react-router-dom**: Routing library for React.
-- **sonner**: Toast notification library.
-
-### Development Dependencies
-
-- **@types/react**: TypeScript definitions for React.
-- **@types/react-dom**: TypeScript definitions for React DOM.
-- **@vitejs/plugin-react**: Vite plugin for React.
-- **autoprefixer**: PostCSS plugin to parse CSS and add vendor prefixes.
-- **postcss**: Tool for transforming CSS with JavaScript plugins.
-- **tailwindcss**: CSS framework for building custom user interfaces.
-- **typescript**: Superset of JavaScript that adds types.
-- **vite**: Build tool and development server.
-
-Feel free to explore the code and make any modifications as needed. If you encounter any issues, please open an issue on the repository.
-
-Happy coding!
+Ensure that the backend API is running and accessible.
